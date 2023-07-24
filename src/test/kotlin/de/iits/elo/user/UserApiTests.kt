@@ -79,4 +79,14 @@ class UserApiTests {
         updatedUser shouldBe expectedUser
     }
 
+    @Test
+    fun getUserElo() {
+        val username = "Peter"
+        val (_, _, result) = "http://localhost:$port/users/${username}/elo".httpGet()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .responseString()
+        result.map { objectMapper.readValue<Int>(it) }
+            .get() shouldBe 1001
+    }
+
 }
