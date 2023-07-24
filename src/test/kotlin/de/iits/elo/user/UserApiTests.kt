@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.result.map
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -62,6 +63,20 @@ class UserApiTests {
         foundUser.email shouldBe expectedUser.email
         foundUser.displayName shouldBe expectedUser.displayName
         foundUser.id shouldNotBe expectedUser.id
+    }
+
+    @Test
+    fun updateUser() {
+        val expectedUser = User(displayName = "I am Peter", email = "peter@iits-consulting.de", username = "peter")
+
+        val (_, _, result) = "http://localhost:$port/users/${expectedUser.username}".httpPut()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .header(HttpHeaders.CONTENT_TYPE to "application/json")
+            .body(objectMapper.writeValueAsString(expectedUser))
+            .responseString()
+
+        val updatedUser: User = objectMapper.readValue(result.get())
+        updatedUser shouldBe expectedUser
     }
 
 }

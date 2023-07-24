@@ -1,5 +1,6 @@
 package de.iits.elo.user
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -22,6 +23,11 @@ class UserApi {
         return ResponseEntity.ok(
             User(displayName = "I am Peter", email = "peter@iits-consulting.de", username = "peter")
         )
+    }
+
+    @PutMapping("/users/{username}", consumes = ["application/json"], produces = ["application/json"])
+    fun updateUser(@PathVariable username: String, @RequestBody user: User): ResponseEntity<User> {
+        return ResponseEntity.ok(user)
     }
 
     @PostMapping("/users", consumes = ["application/json"], produces = ["application/json"])
