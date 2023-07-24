@@ -23,11 +23,13 @@ class UserApiTests {
 
     @Test
     fun getAllUsers() {
-        val (_, _, result) = "http://localhost:$port/users".httpGet().responseString()
+        val (_, _, result) = "http://localhost:$port/users".httpGet()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .responseString()
         val userDisplayNames = result
-                .map { objectMapper.readValue<List<User>>(it) }
-                .get()
-                .map(User::displayName)
+            .map { objectMapper.readValue<List<User>>(it) }
+            .get()
+            .map(User::displayName)
         userDisplayNames shouldBe listOf("Peter", "Paul", "Marry")
     }
 
@@ -36,16 +38,30 @@ class UserApiTests {
         val newUser = User(displayName = "I am new", email = "new@iits-consulting.de", username = "i_am_new")
         val (_, _, result) = "http://localhost:$port/users".httpPost(
         )
-                .header(HttpHeaders.CONTENT_TYPE to "application/json")
-                .jsonBody(objectMapper.writeValueAsString(newUser))
-                .responseString()
+            .header(HttpHeaders.CONTENT_TYPE to "application/json")
+            .jsonBody(objectMapper.writeValueAsString(newUser))
+            .responseString()
 
         val createdUser: User = objectMapper.readValue(result.get())
         createdUser.username shouldBe newUser.username
         createdUser.email shouldBe newUser.email
         createdUser.displayName shouldBe newUser.displayName
         createdUser.id shouldNotBe newUser.id
+    }
 
+    @Test
+    fun getUserByUsername() {
+        val expectedUser = User(displayName = "I am Peter", email = "peter@iits-consulting.de", username = "peter")
+
+        val (_, _, result) = "http://localhost:$port/users/${expectedUser.username}".httpGet()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .responseString()
+
+        val foundUser: User = objectMapper.readValue(result.get())
+        foundUser.username shouldBe expectedUser.username
+        foundUser.email shouldBe expectedUser.email
+        foundUser.displayName shouldBe expectedUser.displayName
+        foundUser.id shouldNotBe expectedUser.id
     }
 
 }
