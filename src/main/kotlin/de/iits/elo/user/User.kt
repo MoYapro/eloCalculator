@@ -1,10 +1,13 @@
 package de.iits.elo.user
 
-import java.util.UUID
+import de.iits.elo.AbstractKotlinPersistable
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
-data class User(
-        val id: UUID = UUID.randomUUID(),
+@Entity
+@Table(name = "users")
+class User(
         val username: String,
         val displayName: String,
         val email: String,
-)
+): AbstractKotlinPersistable()

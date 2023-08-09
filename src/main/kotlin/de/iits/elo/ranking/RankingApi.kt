@@ -16,7 +16,6 @@ class RankingApi {
             listOf(
                 Ranking(
                     rank = 1, elo = 1499, player = User(
-                        id = UUID.fromString("1111111-1167-4d37-beb7-9020d2060ef9"),
                         username = "Peter",
                         displayName = "Der Peter",
                         email = "peter@elo.com"
