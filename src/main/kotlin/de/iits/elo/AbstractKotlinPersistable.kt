@@ -1,5 +1,6 @@
 package de.iits.elo
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.Transient
@@ -8,6 +9,7 @@ import org.springframework.data.util.ProxyUtils
 import java.util.*
 
 @MappedSuperclass
+@JsonIgnoreProperties(value = [ "isNew" ])
 abstract class AbstractKotlinPersistable : Persistable<UUID> {
 
     companion object {
