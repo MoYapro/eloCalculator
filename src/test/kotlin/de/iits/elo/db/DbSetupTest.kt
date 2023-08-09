@@ -19,8 +19,15 @@ class DbSetupTest {
     @Test
     fun canCreateReadEntity() {
         val user = mockuser1
+        val updatedUser = user.copy(email = "different@iits-consulting.de")
         userRepository.save(user)
         val userFromDb: Optional<User> = userRepository.findById(user.id)
         userFromDb.get() shouldBe user
+        userRepository.save(updatedUser)
+        val updatedFromDb: Optional<User> = userRepository.findById(user.id)
+        updatedFromDb.get() shouldBe updatedUser
+        userRepository.delete(user)
+        val userNotFound: Optional<User> = userRepository.findById(user.id)
+        userNotFound.isPresent shouldBe false
     }
 }

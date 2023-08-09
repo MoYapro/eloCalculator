@@ -1,15 +1,30 @@
 package de.iits.elo.match
 
-import de.iits.elo.AbstractKotlinPersistable
 import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.springframework.data.util.ProxyUtils
 import java.util.*
 
 @Entity
 @Table(name = "match")
 class Match(
+        @Id
+        val id: UUID = UUID.randomUUID(),
         val whitePlayer: UUID,
         val blackPlayer: UUID,
         val outcome: Outcome,
         val playedOn: String,
-) : AbstractKotlinPersistable()
+) {
+    override fun equals(other: Any?): Boolean {
+        other ?: return false
+        if (this === other) return true
+        if (javaClass != ProxyUtils.getUserClass(other)) return false
+        other as Match
+        return this.id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return 71 * id.hashCode()
+    }
+}
