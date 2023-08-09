@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.h2database:h2:2.2.220")
+    implementation("org.flywaydb:flyway-core:9.21.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.0")

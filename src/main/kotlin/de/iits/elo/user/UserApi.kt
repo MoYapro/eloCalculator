@@ -4,16 +4,14 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController()
-class UserApi {
+class UserApi(
+        private val userRepository: UserRepository
+) {
 
     @GetMapping("/users", produces = ["application/json"])
-    fun getAllUsers(): ResponseEntity<List<User>> {
+    fun getAllUsers(): ResponseEntity<Iterable<User>> {
         return ResponseEntity.ok(
-            listOf(
-                User(displayName = "Peter", email = "peter@iits-consulting.de", username = ""),
-                User(displayName = "Paul", email = "paul@iits-consulting.de", username = ""),
-                User(displayName = "Marry", email = "marry@iits-consulting.de", username = ""),
-            )
+            userRepository.findAll()
         )
     }
 
