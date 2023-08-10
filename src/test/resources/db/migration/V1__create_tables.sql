@@ -1,6 +1,6 @@
 create table if not exists match
 (
-    outcome      tinyint check (outcome between 0 and 2),
+    outcome      varchar(10),
     black_player uuid,
     id           uuid not null,
     white_player uuid,
