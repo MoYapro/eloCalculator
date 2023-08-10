@@ -7,8 +7,9 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.result.map
+import de.iits.elo.testdata.mockuser2
+import io.kotest.matchers.equality.shouldBeEqualToComparingFields
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -37,46 +38,61 @@ class UserApiTests {
     @Test
     fun createUser() {
         val newUser = User(displayName = "I am new", email = "new@iits-consulting.de", username = "i_am_new")
-        val (_, _, result) = "http://localhost:$port/users".httpPost(
-        )
+        val (_, _, result) = "http://localhost:$port/users".httpPost()
             .header(HttpHeaders.CONTENT_TYPE to "application/json")
             .jsonBody(objectMapper.writeValueAsString(newUser))
             .responseString()
 
         val createdUser: User = objectMapper.readValue(result.get())
-        createdUser.username shouldBe newUser.username
-        createdUser.email shouldBe newUser.email
-        createdUser.displayName shouldBe newUser.displayName
-        createdUser.id shouldNotBe newUser.id
+        createdUser shouldBeEqualToComparingFields newUser.copy(id = createdUser.id)
+
+        val (_, _, resultGet) = "http://localhost:$port/users/${createdUser.username}".httpGet()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .responseString()
+
+        val reFetchedUser: User = objectMapper.readValue(resultGet.get())
+        reFetchedUser shouldBeEqualToComparingFields newUser.copy(id = createdUser.id)
+
     }
 
     @Test
     fun getUserByUsername() {
-        val expectedUser = User(displayName = "I am Peter", email = "peter@iits-consulting.de", username = "peter")
+        val expectedUser = mockuser2
 
         val (_, _, result) = "http://localhost:$port/users/${expectedUser.username}".httpGet()
             .header(HttpHeaders.ACCEPT to "application/json")
             .responseString()
 
         val foundUser: User = objectMapper.readValue(result.get())
-        foundUser.username shouldBe expectedUser.username
-        foundUser.email shouldBe expectedUser.email
-        foundUser.displayName shouldBe expectedUser.displayName
-        foundUser.id shouldNotBe expectedUser.id
+        foundUser shouldBe expectedUser
     }
 
     @Test
     fun updateUser() {
-        val expectedUser = User(displayName = "I am Peter", email = "peter@iits-consulting.de", username = "peter")
+        val expectedUser = mockuser2.copy(displayName = "Changed display name")
 
-        val (_, _, result) = "http://localhost:$port/users/${expectedUser.username}".httpPut()
+        val (_, _, resultPut) = "http://localhost:$port/users/${expectedUser.username}".httpPut()
             .header(HttpHeaders.ACCEPT to "application/json")
             .header(HttpHeaders.CONTENT_TYPE to "application/json")
             .body(objectMapper.writeValueAsString(expectedUser))
             .responseString()
 
-        val updatedUser: User = objectMapper.readValue(result.get())
-        updatedUser shouldBe expectedUser
+        val updatedUser: User = objectMapper.readValue(resultPut.get())
+        updatedUser shouldBeEqualToComparingFields expectedUser
+
+        val (_, _, resultGet) = "http://localhost:$port/users/${expectedUser.username}".httpGet()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .responseString()
+        val reFetchedUser: User = objectMapper.readValue(resultGet.get())
+        reFetchedUser shouldBeEqualToComparingFields expectedUser
+
+        // revert db changes
+        "http://localhost:$port/users/${expectedUser.username}".httpPut()
+            .header(HttpHeaders.ACCEPT to "application/json")
+            .header(HttpHeaders.CONTENT_TYPE to "application/json")
+            .body(objectMapper.writeValueAsString(expectedUser))
+            .responseString()
+
     }
 
     @Test
