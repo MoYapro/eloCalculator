@@ -29,5 +29,6 @@ class DbSetupTest {
         userRepository.delete(user)
         val userNotFound: Optional<User> = userRepository.findById(user.id)
         userNotFound.isPresent shouldBe false
+        userRepository.save(mockuser1)
     }
 }

@@ -14,6 +14,7 @@ data class User(
         val username: String,
         val displayName: String,
         val email: String,
+        val elo: Int? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         other ?: return false

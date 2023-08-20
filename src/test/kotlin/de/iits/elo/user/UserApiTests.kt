@@ -32,7 +32,7 @@ class UserApiTests {
             .map { objectMapper.readValue<List<User>>(it) }
             .get()
             .map(User::displayName)
-        userDisplayNames shouldBe listOf("Peter", "Paul", "Marry")
+        userDisplayNames.sorted() shouldBe  listOf("Peter", "Paul", "Marry").sorted()
     }
 
     @Test
@@ -52,7 +52,6 @@ class UserApiTests {
 
         val reFetchedUser: User = objectMapper.readValue(resultGet.get())
         reFetchedUser shouldBeEqualToComparingFields newUser.copy(id = createdUser.id)
-
     }
 
     @Test
@@ -90,9 +89,8 @@ class UserApiTests {
         "http://localhost:$port/users/${expectedUser.username}".httpPut()
             .header(HttpHeaders.ACCEPT to "application/json")
             .header(HttpHeaders.CONTENT_TYPE to "application/json")
-            .body(objectMapper.writeValueAsString(expectedUser))
+            .body(objectMapper.writeValueAsString(mockuser2))
             .responseString()
-
     }
 
     @Test
